@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="AspireAppDemo.AppHost/AspireAppDemo.AppHost.csproj" />
+  <Project Path="AspireAppDemo.ServiceDefaults/AspireAppDemo.ServiceDefaults.csproj" />
+  <Project Path="Tests/Tests.csproj" Id="fc6120be-8dc4-4612-8f3f-94cde8466eab" />
+  <Project Path="WebApi/WebApi.csproj" />
+</Solution>
