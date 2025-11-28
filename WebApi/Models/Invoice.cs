@@ -16,8 +16,9 @@
 
         public decimal Total { get; set; }
 
+        public List<InvoiceFile> Files { get; set; } = [];
 
-        public List<InvoiceRow> Rows { get; set; } = new List<InvoiceRow>();
+        public List<InvoiceRow> Rows { get; set; } = [];
     }
 
     public class InvoiceRow

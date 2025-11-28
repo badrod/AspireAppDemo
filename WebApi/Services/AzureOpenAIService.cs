@@ -5,14 +5,11 @@ namespace WebApi.Services
 {
 
 
-
-
-    public class OpenAIService(IOptions<Settings> options) : IAIService
+    public class AzureOpenAIService(IOptions<Settings> options) : IAIService
     {
         public async Task<List<Invoice>> ReadInvoices(List<InvoiceFile> invoiceFiles)
         {
-           var openAiSettings = options.Value.OpenAISettings ?? throw new Exception("OpenAI settings are not configured.");
-           
+            var azureAISettings = options.Value.AzureOpenAISettings ?? throw new Exception("AzureOpenAISettings settings are not configured.");
 
 
             var invoice = new Invoice
