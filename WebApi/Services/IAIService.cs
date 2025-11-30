@@ -4,6 +4,6 @@ namespace WebApi.Services
 {
     public interface IAIService
     {
-        public Task<List<Invoice>> ReadInvoices(List<InvoiceFile> invoiceFiles);
+        public Task<Invoice> ExtractInvoice(InvoiceFile invoiceFile);
     }
 }

@@ -6,12 +6,20 @@ namespace WebApi.Models
     {
         public string? ContentType { get; set; }
         public byte[]? Content { get; set; }
-        public string FileName { get => $"invoice-{DateTime.UtcNow}.json"; }
+
+        // Generate a safe file name with timestamp + original extension
+        public string FileName => $"invoice-{DateTime.UtcNow:yyyyMMddHHmmss}{Path.GetExtension(OriginalFileName)}";
 
         // Original filename from upload, for safety we do not use it as the saved file name
         public string? OriginalFileName { get; set; }
+
         required public string Sha256 { get; set; }
 
+        // Convenience property to get just the extension (e.g. ".pdf", ".jpg")
+        public string? FileExtension => Path.GetExtension(OriginalFileName);
+
+
+         
 
     }
 }

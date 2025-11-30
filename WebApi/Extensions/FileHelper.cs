@@ -19,26 +19,6 @@ namespace WebApi.Extensions
             return IsImage(contentType) || IsPdf(contentType);
         }
 
-        public static List<InvoiceFile> CreateInvoiceFileFromFormFiles(this IFormFileCollection formFiles)
-        { 
-            return [.. formFiles.Select(f => f.CreateInvoiceFileFromFormFile())];
-        }
-        public static InvoiceFile CreateInvoiceFileFromFormFile(this IFormFile formFile)
-        {
-            using var ms = new MemoryStream();
-            formFile.CopyTo(ms);
-            var bytes = ms.ToArray();
 
-            return new InvoiceFile
-            {
-                OriginalFileName = formFile.FileName,
-                ContentType = formFile.ContentType,
-                Content = bytes,
-                Sha256 = Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant()
-
-            };
-
-
-        }
     }
 }

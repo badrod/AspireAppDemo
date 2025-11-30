@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;
 using System.Security.Cryptography;
@@ -11,16 +11,29 @@ namespace WebApi.Extensions
     {
         public static void MapApiEndpoints(this WebApplication app)
         {
-       
-            // Simple upload endpoint for image or PDF
-            app.MapPost("/upload", UploadDocument)
-                .WithDescription("Create Invoices with Vision AI")
-                .Produces<List<Invoice>>(StatusCodes.Status201Created)
-                .ProducesProblem(500)
-                .ProducesProblem(400);
+            app.MapPost("/api/upload", async (IFormFile file, IAIService service) =>
+            {
+                try
+                {
+                    var invoiceFile = CreateInvoiceFile(file);
+
+                    var result = await service.ExtractInvoice(invoiceFile);
+                    return Results.Ok(result);
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message, statusCode: 500);
+                }
+            }).DisableAntiforgery()//just in test
+            .WithDescription("Create Invoices with Vision AI")
+            .Accepts<IFormFile>("multipart/form-data")
+            .Produces<List<Invoice>>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status500InternalServerError)
+            .ProducesProblem(StatusCodes.Status400BadRequest);
 
 
-            //use feature toggle 
+
+            ////use feature toggle 
             app.Use(async (context, next) =>
             {
                 var toggles = context.RequestServices
@@ -37,7 +50,6 @@ namespace WebApi.Extensions
             });
 
 
-
             app.MapGet("/features", (IOptionsSnapshot<Settings> options) =>
             {
                 var toggles = options.Value.FeatureToggles;
@@ -51,23 +63,19 @@ namespace WebApi.Extensions
 
         }
 
-        private static async Task<IResult> UploadDocument(HttpRequest request, IAIService service)
+        private static InvoiceFile CreateInvoiceFile(IFormFile formFile)
         {
-
-            var validation = await request.IsValidRequestAsync();
-            if (validation is BadRequest<string>)
-                return validation;
-
-            var form = await request.ReadFormAsync();    
-
-
-            var invoiceFiles = form.Files.CreateInvoiceFileFromFormFiles();
-          
-            var result = await service.ReadInvoices(invoiceFiles);
-
-            return Results.Json(result);
+            using var ms = new MemoryStream();
+            formFile.CopyTo(ms);
+            var bytes = ms.ToArray();
+            return new InvoiceFile
+            {
+                OriginalFileName = formFile.FileName,
+                ContentType = formFile.ContentType,
+                Content = bytes,
+                Sha256 = Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant()
+            };
 
         }
-
     }
 }
