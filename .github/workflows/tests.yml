@@ -5,8 +5,11 @@ name: Tests
 permissions:
   contents: read
 
-on: 
-  workflow_run:      
+on:
+  workflow_call:
+ 
+    
+                  
 
 jobs:
   build:
