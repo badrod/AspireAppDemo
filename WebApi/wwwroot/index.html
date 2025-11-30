@@ -82,6 +82,26 @@
 </head>
 <body>
     <h1>Upload Image or PDF</h1>
+
+ 
+
+    <div style="display: flex; gap: 10px;">
+        <!-- Build badge -->
+        <a href="https://github.com/badrod/AspireAppDemo/actions/workflows/build.yml">
+            <img src="https://github.com/badrod/AspireAppDemo/actions/workflows/build.yml/badge.svg?branch=master" alt=".NET Build Status" />
+        </a>
+
+        <!-- Tests badge -->
+        <a href="https://github.com/badrod/AspireAppDemo/actions/workflows/tests.yml">
+            <img src="https://github.com/badrod/AspireAppDemo/actions/workflows/tests.yml/badge.svg?branch=master" alt="Tests Status" />
+        </a>
+
+        <!-- Coverage badge -->
+        <a href="https://github.com/badrod/AspireAppDemo/actions/workflows/coverage.yml">
+            <img src="https://github.com/badrod/AspireAppDemo/actions/workflows/coverage.yml/badge.svg?branch=master" alt="Coverage Status" />
+        </a>
+    </div>
+
     <form id="uploadForm">
         <input id="fileInput" name="file" type="file" accept="image/*,application/pdf" />
         <button type="submit">Upload</button>
