@@ -23,14 +23,29 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore --configuration Release
+
   
-    - name: Test
-      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage"
+    - name: Test with coverage
+      run: dotnet test --no-build --configuration Release \
+            /p:CollectCoverage=true \
+            /p:CoverletOutput=TestResults/coverage.xml \
+            /p:CoverletOutputFormat=cobertura
+
   
     - name: Upload coverage reports
       uses: codecov/codecov-action@v4
       if: always()
       with:
-        files: '**/coverage.cobertura.xml'
-        fail_ci_if_error: false
+        files: ./TestResults/coverage.xml
+        fail_ci_if_error: true
+
+    - name: SonarQube Scan
+      uses: sonarsource/sonarqube-scan-action@v2
+      with:
+        projectBaseDir: .
+        args: >
+          -Dsonar.projectKey=AspireAppDemo
+          -Dsonar.organization=badrod
+          -Dsonar.host.url=https://sonarcloud.io
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
