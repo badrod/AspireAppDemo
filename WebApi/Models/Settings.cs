@@ -1,9 +1,10 @@
-﻿namespace WebApi.Models
+﻿using Microsoft.FeatureManagement;
+
+namespace WebApi.Models
 {
     public class Settings
     {
-        public  FeatureToggles FeatureToggles { get; set; } = new();
-
+       
         public OpenAISettings? OpenAISettings { get; set; } = new();
 
         public AzureOpenAISettings? AzureOpenAISettings { get; set; } = new();
@@ -19,12 +20,6 @@
         public string? Endpoint { get; set; }
         public string? DeploymentName { get; set; }
 
-    }
-    public class FeatureToggles
-    {
-        public bool UseScalar { get; set; }
-        public bool UseCache { get; set; } = false;
-        public bool EnableNewUI { get; set; }
     }
 
     public class OpenAISettings

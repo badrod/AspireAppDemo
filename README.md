@@ -62,6 +62,9 @@ The front-end is located at `WebApi/wwwroot/index.html`. It provides file select
 
 ## Testing
 
+/Tests.csproj
+- Includes unit tests for core parsing logic.
+- One integration test for the upload API endpoint is provided.
 - No automated tests are included by default. Add unit tests for parsing and API behaviors in a `tests` project.
 - For quick manual tests use the provided `index.html` UI and sample invoice files.
 

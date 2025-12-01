@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using Scalar.AspNetCore;
+﻿using Scalar.AspNetCore;
 using System.Security.Cryptography;
 using WebApi.Models;
 using WebApi.Services;
@@ -30,39 +28,9 @@ namespace WebApi.Extensions
             .Produces<List<Invoice>>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status500InternalServerError)
             .ProducesProblem(StatusCodes.Status400BadRequest);
-
-
-
-            ////use feature toggle 
-            app.Use(async (context, next) =>
-            {
-                var toggles = context.RequestServices
-                    .GetRequiredService<IOptionsSnapshot<Settings>>()
-                    .Value.FeatureToggles;
-
-                if (!toggles.UseScalar && context.Request.Path.StartsWithSegments("/api"))
-                {
-                    context.Response.StatusCode = StatusCodes.Status404NotFound;
-                    return;
-                }
-
-                await next();
-            });
-
-
-            app.MapGet("/features", (IOptionsSnapshot<Settings> options) =>
-            {
-                var toggles = options.Value.FeatureToggles;
-                return Results.Ok(new
-                {
-                    toggles.UseScalar,
-                    toggles.UseCache,
-                    toggles.EnableNewUI
-                });
-            }).WithDescription("Feature toggle");
-
         }
 
+        //
         private static InvoiceFile CreateInvoiceFile(IFormFile formFile)
         {
             using var ms = new MemoryStream();

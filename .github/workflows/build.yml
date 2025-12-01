@@ -1,54 +1,53 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-
-name: .NET
-
-permissions:
-  contents: read
+name: Build & Test
 
 on:
   push:
-    branches: [ "master, dev" ]
+    branches: [ main, dev ]
   pull_request:
-    branches: [ "master, dev" ]
+    branches: [ main, dev ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 10.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore --configuration Release
+      # Checkout source
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  
-    - name: Test with coverage
-      run: dotnet test --no-build --configuration Release \
-            /p:CollectCoverage=true \
-            /p:CoverletOutput=TestResults/coverage.xml \
-            /p:CoverletOutputFormat=cobertura
+      # Setup .NET
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
 
-  
-    - name: Upload coverage reports
-      uses: codecov/codecov-action@v4
-      if: always()
-      with:
-        files: ./TestResults/coverage.xml
-        fail_ci_if_error: true
+      # Restore dependencies
+      - name: Restore dependencies
+        run: dotnet restore
 
-    - name: SonarQube Scan
-      uses: sonarsource/sonarqube-scan-action@v2
-      with:
-        projectBaseDir: .
-        args: >
-          -Dsonar.projectKey=AspireAppDemo
-          -Dsonar.organization=badrod
-          -Dsonar.host.url=https://sonarcloud.io
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      # Build solution
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      # Run tests
+      - name: Test
+        run: dotnet test --no-build --configuration Release --collect:"XPlat Code Coverage"
+
+      # Upload coverage to Codecov
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          #token: ${{ secrets.CODECOV_TOKEN }}
+          files: '**/coverage.cobertura.xml'
+          fail_ci_if_error: true
+
+      # SonarQube analysis (optional)
+      - name: SonarQube Scan
+        uses: sonarsource/sonarcloud-github-action@v2
+        with:
+          args: >
+            -Dsonar.projectKey=badrod_AspireAppDemo
+            -Dsonar.organization=badrod
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
