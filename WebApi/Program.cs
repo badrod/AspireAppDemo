@@ -1,5 +1,5 @@
 ﻿
-
+using Microsoft.FeatureManagement;
 using Microsoft.FeatureManagement.AspNetCore;
 using Scalar.AspNetCore;
 using WebApi.Extensions;
@@ -47,19 +47,20 @@ if (app.Environment.IsDevelopment())
 }
 // Feature-gated endpoint 
 
- 
-
-//Dynamically adds endpoint when toggle is on, no need for app restart
-app.MapGet("/feature", () => "Hello new feature").WithFeatureGate("EnableNewFeature");
-
 
 
 //Dynamically adds endpoint when toggle is on, no need for app restart
-app.MapGet("/test", (IAIService service) => { 
+//app.MapGet("/feature", () => "Hello new feature").WithFeatureGate("EnableNewFeature");
 
 
 
-}).WithFeatureGate("EnableNewFeature");
+// Returns 404 if feature is disabled, no need for app restart if toggled
+// Used in integration tests
+app.MapGet("/test", () => {
+
+    // Some new feature logic
+
+}).WithFeatureGate("TestFeature");
 
 
 
