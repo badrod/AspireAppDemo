@@ -8,6 +8,7 @@ namespace WebApi.Models
         public OpenAISettings? OpenAISettings { get; set; } = new();
 
         public AzureOpenAISettings? AzureOpenAISettings { get; set; } = new();
+        public GoogleAISettings GoogleAISettings { get; internal set; } = new();
     }
     public class AzureSettings
     {
@@ -27,5 +28,9 @@ namespace WebApi.Models
         public string? Model { get; set; }
         public string? ApiKey { get; set; }
     }
+    public class GoogleAISettings
+    {
+        public string ApiKey { get; set; } = string.Empty;
+    }
+
 }
-    

@@ -2,7 +2,6 @@
 using OpenAI.Files;
 using OpenAI.Responses;
 using System.ClientModel;
-using WebApi.Helpers;
 using WebApi.Models;
 
 namespace WebApi.Services
@@ -37,7 +36,7 @@ namespace WebApi.Services
                     ".png" or ".jpg" or ".jpeg" => await ReadInvoiceFromImageAsync(invoiceFile),
                     _ => throw new NotSupportedException($"File type {extension} is not supported.")
                 };
-                return res.MapResult()!;
+                return MapResult(res);
             }
             catch (Exception ex)
             {
@@ -84,14 +83,27 @@ namespace WebApi.Services
                             ResponseContentPart.CreateInputTextPart(prompt)
                         ])
                     ], responseType
-          
+
                    );
 
         }
-    }
 
 
+        public static Invoice MapResult( ClientResult<OpenAIResponse>? response)
+        {
+            var json = response?.Value?.GetOutputText();
+
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                throw new InvalidOperationException("AI response contained no output text.");
+            }
+
+            return Invoice.FromJson(json);
+
+
+        }
 #pragma warning restore OPENAI001
 
 
+    }
 }

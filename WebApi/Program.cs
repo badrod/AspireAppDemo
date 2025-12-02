@@ -7,7 +7,7 @@ using WebApi.Models;
 using WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
- 
+
 // Reload appsettings.json when changed
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddEnvironmentVariables(); // Env var for read local secrets for api keys during development, use keyvault if in az
@@ -24,7 +24,11 @@ builder.AddServiceDefaults();
 builder.Services.AddOpenApi();
 
 //Custom services
-builder.Services.AddScoped<IAIService, OpenAIService>();
+builder.Services.AddScoped<OpenAIService>();
+builder.Services.AddScoped<GoogleAIService>();
+// Register the middleware router as the single IAIService
+builder.Services.AddScoped<IAIService, ToggleAIService>();
+
 
 var app = builder.Build();
 
@@ -46,31 +50,13 @@ if (app.Environment.IsDevelopment())
     app.MapStaticAssets();
 }
 // Feature-gated endpoint 
-
-
-
-//Dynamically adds endpoint when toggle is on, no need for app restart
-//app.MapGet("/feature", () => "Hello new feature").WithFeatureGate("EnableNewFeature");
-
-
-
 // Returns 404 if feature is disabled, no need for app restart if toggled
-// Used in integration tests
-app.MapGet("/test", () => {
-
+app.MapGet("/feature", () =>
+{
     // Some new feature logic
 
-}).WithFeatureGate("TestFeature");
+}).WithFeatureGate("EnableNewFeature");
 
-
-
-
-////Dynamically changes when flag is toggled, the route is allways mapped
-//app.MapGet("/test", async (IFeatureManagerSnapshot featureManager) =>
-//{
-//    bool enabled = await featureManager.IsEnabledAsync("EnableNewFeature");
-//    return Results.Ok(enabled); // returns true/false
-//});
 
 
 

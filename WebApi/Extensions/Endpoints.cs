@@ -14,7 +14,6 @@ namespace WebApi.Extensions
                 try
                 {
                     var invoiceFile = CreateInvoiceFile(file);
-
                     var result = await service.ExtractInvoice(invoiceFile);
                     return Results.Ok(result);
                 }
