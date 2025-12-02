@@ -15,12 +15,12 @@ namespace Tests.Unit.Services
             return Task.FromResult(new Invoice
             {
                 InvoiceNumber = "INV-2025-001",
-                Date = DateTime.Now,
-                Customer = "Test Consulting Group",
-                Vendor = "Demo Supplies AB",
+                InvoiceDate = DateTime.Now.ToString(),
+                BillToName = "Test Consulting Group",
+                VendorName = "Demo Supplies AB",
                 Items = new List<InvoiceItem> { new InvoiceItem { Description = "Laptop", Quantity = 2, UnitPrice = 500 },
                  new InvoiceItem { Description = "Mouse", Quantity =5, UnitPrice = 25.15m }},
-                Total = 1250.75m,
+                TotalAmount = 1250.75m,
                 Files = new List<InvoiceFile> { file },
                 AIJsonResponse = @"{
                 ""InvoiceNumber"": ""INV-2025-001"",        

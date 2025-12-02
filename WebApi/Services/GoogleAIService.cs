@@ -1,9 +1,6 @@
-﻿using Google.GenAI;
-using Google.GenAI.Types;
+﻿using Google.GenAI.Types;
 using Microsoft.Extensions.Options;
-using System.Text.Json;
 using WebApi.Models;
-using Type = Google.GenAI.Types.Type;
 
 namespace WebApi.Services
 {
@@ -13,32 +10,24 @@ namespace WebApi.Services
         private readonly GoogleAISettings settings = options.Value.GoogleAISettings
             ?? throw new InvalidOperationException("Google AI settings not configured.");
 
-        private readonly string prompt = """
-            Extract invoice fields (number, date, total, line items) and return as JSON.
-            """;
 
         public async Task<Invoice> ExtractInvoice(InvoiceFile invoiceFile)
         {
 
             try
             {
-                var extension = Path.GetExtension(invoiceFile.OriginalFileName)?.ToLowerInvariant();
                 var json = await ExtractInvoiceFromFile(invoiceFile);
-              
-                if (json == null)
-                    throw new Exception("No JSON extracted from invoice file.");
 
-                var dto = JsonSerializer.Deserialize<InvoiceDto>(json);
+                var parsedInvoice = JsonHelper.Deserialize<Invoice?>(json!);
+          
 
-                Invoice invoice = InvoiceMapper.ToDomain(dto!);
+                return parsedInvoice ?? new Invoice { AIJsonResponse = json };
 
 
-                return invoice;
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Failed to Read Invoice");
-
                 throw;
             }
         }
@@ -58,7 +47,7 @@ namespace WebApi.Services
                 }
             };
 
-            var textPart = new Part { Text = prompt ?? "Extract invoice details from this file." };
+            var textPart = new Part { Text = "Extract invoice details from this file and respond ONLY with valid JSON that matches the privided invoice schema." };
             var content = new Content
             {
                 Parts = new List<Part> { imagePart, textPart }
@@ -66,18 +55,10 @@ namespace WebApi.Services
 
             var outputConfig = new GenerateContentConfig
             {
-                //ResponseSchema = new Schema
-                //{
-                //    Type = Type.OBJECT,
-                //    Properties = new Dictionary<string, Schema>
-                //    {
-                //        { "vendor", new Schema { Type = Type.STRING } },
-                //        { "date", new Schema { Type = Type.STRING } },
-                //        { "total", new Schema { Type = Type.NUMBER } },
-                //        { "items", new Schema { Type = Type.ARRAY } }
-                //    }
-                //},
-                ResponseMimeType = "application/json"
+                ResponseMimeType = "application/json",
+                ResponseJsonSchema = Schema.FromJson(JsonHelper.GetSchema<Invoice>(), JsonHelper.Options),
+                ResponseSchema = Schema.FromJson(JsonHelper.GetSchema<Invoice>(), JsonHelper.Options)
+
             };
 
             var response = await client.Models.GenerateContentAsync(
@@ -91,6 +72,7 @@ namespace WebApi.Services
             var candidate = response?.Candidates?.FirstOrDefault();
             var textResult = candidate?.Content?.Parts?.FirstOrDefault(p => p.Text != null)?.Text;
 
+            Console.WriteLine(textResult);
             if (string.IsNullOrWhiteSpace(textResult))
             {
                 throw new InvalidOperationException("No text response from Gemini model.");
