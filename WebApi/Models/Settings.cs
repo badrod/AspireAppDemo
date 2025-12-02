@@ -1,12 +1,14 @@
-﻿namespace WebApi.Models
+﻿using Microsoft.FeatureManagement;
+
+namespace WebApi.Models
 {
     public class Settings
     {
-        public  FeatureToggles FeatureToggles { get; set; } = new();
-
+       
         public OpenAISettings? OpenAISettings { get; set; } = new();
 
         public AzureOpenAISettings? AzureOpenAISettings { get; set; } = new();
+        public GoogleAISettings GoogleAISettings { get; internal set; } = new();
     }
     public class AzureSettings
     {
@@ -20,17 +22,15 @@
         public string? DeploymentName { get; set; }
 
     }
-    public class FeatureToggles
-    {
-        public bool UseScalar { get; set; }
-        public bool UseCache { get; set; } = false;
-        public bool EnableNewUI { get; set; }
-    }
 
     public class OpenAISettings
     {
         public string? Model { get; set; }
         public string? ApiKey { get; set; }
     }
+    public class GoogleAISettings
+    {
+        public string ApiKey { get; set; } = string.Empty;
+    }
+
 }
-    
