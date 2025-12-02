@@ -21,7 +21,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: 10.0.x
 
       # Cache NuGet packages for faster builds
       - name: Cache NuGet
@@ -42,7 +42,7 @@ jobs:
 
       # Run tests with coverage
       - name: Test
-        run: dotnet test --no-build --configuration Release --collect:"XPlat Code Coverage"
+        run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
 
       # Upload coverage to Codecov
       - name: Upload coverage to Codecov
