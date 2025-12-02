@@ -1,7 +1,7 @@
 ﻿# AspireAppDemo
 
 [![Build & Test](https://github.com/badrod/AspireAppDemo/actions/workflows/build.yml/badge.svg)](https://github.com/badrod/AspireAppDemo/actions/workflows/build.yml)
-[![codecov](https://codecov.io/gh/badrod/AspireAppDemo/branch/main/graph/badge.svg)](https://codecov.io/gh/badrod/AspireAppDemo)
+[![codecov](https://codecov.io/gh/badrod/AspireAppDemo/graph/badge.svg)](https://codecov.io/gh/badrod/AspireAppDemo)
 [![SonarQube analysis](https://github.com/badrod/AspireAppDemo/actions/workflows/sonarqube.yml/badge.svg)](https://github.com/badrod/AspireAppDemo/actions/workflows/sonarqube.yml)
 [![CodeQL](https://github.com/badrod/AspireAppDemo/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/badrod/AspireAppDemo/actions/workflows/github-code-scanning/codeql)
 ---
