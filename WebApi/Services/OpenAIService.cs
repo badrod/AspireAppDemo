@@ -89,7 +89,7 @@ namespace WebApi.Services
         }
 
 
-        public static Invoice MapResult( ClientResult<OpenAIResponse>? response)
+        public static Invoice? MapResult( ClientResult<OpenAIResponse>? response)
         {
             var json = response?.Value?.GetOutputText();
 
@@ -98,7 +98,7 @@ namespace WebApi.Services
                 throw new InvalidOperationException("AI response contained no output text.");
             }
 
-            return Invoice.FromJson(json);
+            return JsonHelper.Deserialize<Invoice>(json);
 
 
         }

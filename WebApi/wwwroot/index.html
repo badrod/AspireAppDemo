@@ -1,256 +1,66 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="sv-se">
 <head>
     <meta charset="utf-8" />
     <title>Upload Image or PDF</title>
-    <style>
-        body {
-            font-family: Segoe UI, Roboto, Arial, sans-serif;
-            margin: 24px;
-        }
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
-        form {
-            margin-bottom: 16px;
-        }
-
-        input[type="file"] {
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        button {
-            padding: 8px 12px;
-        }
-
-        pre {
-            background: #1e1e1e;
-            color: #dcdcdc;
-            padding: 12px;
-            border-radius: 6px;
-            overflow: auto;
-            max-height: 60vh;
-        }
-
-        /* preview styles */
-        #preview {
-            margin: 12px 0;
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-            flex-wrap: wrap;
-        }
-
-        .preview-box {
-            border: 1px solid rgba(0,0,0,0.15);
-            border-radius: 6px;
-            padding: 8px;
-            background: #fafafa;
-            color: #111;
-            max-width: 720px;
-            width: 100%;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
-
-        .preview-img {
-            max-width: 100%;
-            max-height: 360px;
-            display: block;
-            border-radius: 4px;
-        }
-
-        .preview-pdf {
-            width: 100%;
-            height: 420px;
-            border: none;
-        }
-
-        .preview-meta {
-            font-size: 13px;
-            color: #666;
-            margin-top: 8px;
-        }
-
-        .key {
-            color: #9cdcfe;
-        }
-
-        .error {
-            color: #f44747;
-            font-weight: 600;
-        }
-    </style>
+    <link href="css/style.css" rel="stylesheet" />
 </head>
 <body>
-    <h1>Upload Image or PDF</h1>
 
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
 
+            <a href="https://github.com/badrod/AspireAppDemo/actions/workflows/build.yml">
+                <img src="https://github.com/badrod/AspireAppDemo/actions/workflows/build.yml/badge.svg?branch=master" alt=".NET Build Status" />
+            </a>
+            <a href="https://codecov.io/gh/badrod/AspireAppDemo/">
+                <img src="https://codecov.io/gh/badrod/AspireAppDemo/graph/badge.svg" alt="Maintainability Rating" />
 
-    <div style="display: flex; gap: 10px;">
-        <!-- Build badge -->
-        <a href="https://github.com/badrod/AspireAppDemo/actions/workflows/build.yml">
-            <img src="https://github.com/badrod/AspireAppDemo/actions/workflows/build.yml/badge.svg?branch=master" alt=".NET Build Status" />
-        </a>
-        <a href="https://codecov.io/gh/badrod/AspireAppDemo/">
-            <img src="https://codecov.io/gh/badrod/AspireAppDemo/graph/badge.svg" alt="Maintainability Rating" />
+            </a>
 
-        </a>
+            <a href="https://github.com/badrod/AspireAppDemo/actions/workflows/sonarqube.yml">
+                <img src="https://github.com/badrod/AspireAppDemo/actions/workflows/sonarqube.yml/badge.svg" alt="Maintainability Rating" />
+
+            </a>
+            <a href="https://github.com/badrod/AspireAppDemo/actions/workflows/github-code-scanning/codeql">
+                <img src="https://github.com/badrod/AspireAppDemo/actions/workflows/github-code-scanning/codeql/badge.svg" alt="CodeQL" />
+            </a>
+
+            <a href="/health" class="button">
+                <span class="text-white">Health</span> <span class="badge badge-sm text-bg-success">Live</span>
+            </a>
       
-        <!--SonarQube-->
-        <a href="https://github.com/badrod/AspireAppDemo/actions/workflows/sonarqube.yml">
-            <img src="https://github.com/badrod/AspireAppDemo/actions/workflows/sonarqube.yml/badge.svg" alt="Maintainability Rating" />
 
-        </a>
-        <a href="https://github.com/badrod/AspireAppDemo/actions/workflows/github-code-scanning/codeql">
-            <img src="https://github.com/badrod/AspireAppDemo/actions/workflows/github-code-scanning/codeql/badge.svg" alt="CodeQL" />
-        </a>
+        </div>
+    </nav>
 
 
+
+    <div class="container my-5">
+        <h1>Interpret invoice with AI</h1>
+        <div class="row  g-2 my-5 p-5">
+            <div class="col-md-10 m-2 p-2">
+                <form class="row g-2" id="uploadForm">
+                    <label for="fileInput" class="form-labe form-control-lg">Select an image or pdf invoice</label>
+                    <input id="fileInput" name="file" type="file" class="form-control form-control-lg" accept="image/*,application/pdf" />
+                    <div class=" col-md-10">
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </div>
+                </form>
+
+            </div>
+            <div id="preview"  class="mx-auto" aria-live="polite"></div>
+
+            <div id="output">
+                <pre class="bg-dark" id="result"></pre>
+            </div>
+        </div>
     </div>
 
-    <form id="uploadForm">
-        <input id="fileInput" name="file" type="file" accept="image/*,application/pdf" />
-        <button type="submit">Upload</button>
-    </form>
-
-    <div id="preview" aria-live="polite"></div>
-
-    <div id="output">
-        <pre id="result"></pre>
-    </div>
-
-    <script>
-        // Pretty-print JSON and add simple syntax highlighting
-        function syntaxHighlight(json) {
-            if (typeof json !== 'string') {
-                json = JSON.stringify(json, undefined, 2);
-            }
-            json = json
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;');
-
-            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(?:\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
-                function (match) {
-                    let cls = 'number';
-                    if (/^"/.test(match)) {
-                        if (/:$/.test(match)) {
-                            cls = 'key';
-                        } else {
-                            cls = 'string';
-                        }
-                    } else if (/true|false/.test(match)) {
-                        cls = 'boolean';
-                    } else if (/null/.test(match)) {
-                        cls = 'null';
-                    }
-                    return '<span class="' + cls + '">' + match + '</span>';
-                });
-        }
-
-        // Show preview for selected file (image or PDF)
-        const fileInput = document.getElementById('fileInput');
-        const previewEl = document.getElementById('preview');
-        const resultPre = document.getElementById('result');
-
-        function clearPreview() {
-            // revoke any object URLs created
-            const objs = previewEl.querySelectorAll('[data-obj-url]');
-            objs.forEach(el => {
-                const url = el.getAttribute('data-obj-url');
-                try { URL.revokeObjectURL(url); } catch { }
-            });
-            previewEl.innerHTML = '';
-        }
-
-        function showPreview(file) {
-            clearPreview();
-            if (!file) return;
-
-            const box = document.createElement('div');
-            box.className = 'preview-box';
-
-            const meta = document.createElement('div');
-            meta.className = 'preview-meta';
-            meta.textContent = `${file.name} — ${(file.size / 1024).toFixed(1)} KB — ${file.type || 'n/a'}`;
-
-            if (file.type.startsWith('image/')) {
-                const img = document.createElement('img');
-                img.className = 'preview-img';
-                const url = URL.createObjectURL(file);
-                img.src = url;
-                img.setAttribute('data-obj-url', url);
-                // attach attribute to revoke later
-                img.onload = () => { try { URL.revokeObjectURL(url); } catch { } };
-                box.appendChild(img);
-                box.appendChild(meta);
-                previewEl.appendChild(box);
-            } else if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
-                const info = document.createElement('div');
-                info.textContent = 'PDF preview (embedded). If your browser cannot render PDFs, the file can still be uploaded.';
-                info.style.marginBottom = '8px';
-
-                const iframe = document.createElement('iframe');
-                iframe.className = 'preview-pdf';
-                const url = URL.createObjectURL(file);
-                iframe.src = url;
-                iframe.setAttribute('data-obj-url', url);
-                // revoke when iframe loads (may not fire in all browsers reliably, so still revoke on clear)
-                iframe.onload = () => { try { URL.revokeObjectURL(url); } catch { } };
-
-                box.appendChild(info);
-                box.appendChild(iframe);
-                box.appendChild(meta);
-                previewEl.appendChild(box);
-            } else {
-                const note = document.createElement('div');
-                note.textContent = 'No preview available for this file type.';
-                box.appendChild(note);
-                box.appendChild(meta);
-                previewEl.appendChild(box);
-            }
-        }
-
-        fileInput.addEventListener('change', function () {
-            const f = fileInput.files && fileInput.files[0];
-            showPreview(f || null);
-            // clear previous result when picking a new file
-            resultPre.textContent = '';
-        });
-
-        document.getElementById('uploadForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const input = document.getElementById('fileInput');
-            const file = input.files && input.files[0];
-            const resultPre = document.getElementById('result');
-
-            if (!file) {
-                resultPre.innerHTML = '<span class="error">Please choose a file.</span>';
-                return;
-            }
-
-            const fd = new FormData();
-            fd.append('file', file);
-
-            try {
-                const resp = await fetch('/api/upload', {
-                    method: 'POST',
-                    body: fd
-                });
-
-                const json = await resp.json();
-                if (!resp.ok) {
-                    resultPre.innerHTML = '<span class="error">' + (json.error || 'Upload failed') + '</span>';
-                    return;
-                }
-
-                resultPre.innerHTML = syntaxHighlight(json);
-            } catch (err) {
-                resultPre.innerHTML = '<span class="error">Network error: ' + err.message + '</span>';
-            }
-        });
-
-        // revoke object URLs on page unload to avoid leaks
-        window.addEventListener('beforeunload', clearPreview);
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script src="/scripts/main.js"></script>
 </body>
+
 </html>

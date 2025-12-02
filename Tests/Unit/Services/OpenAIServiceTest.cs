@@ -30,7 +30,7 @@ namespace Tests.Unit.Services
          var result = await _service.ExtractInvoice(invoiceFile);
 
             Assert.Equal("INV-2025-001", result.InvoiceNumber);
-            Assert.Equal(1250.75m, result.Total);
+            Assert.Equal(1250.75m, result.TotalAmount);
             Assert.Equal("test.pdf", result.Files?[0].OriginalFileName);
         }
 
@@ -50,7 +50,7 @@ namespace Tests.Unit.Services
 
 
             Assert.Equal("INV-2025-001", result.InvoiceNumber);
-            Assert.Equal("Demo Supplies AB", result.Vendor);
+            Assert.Equal("Demo Supplies AB", result.VendorName);
             Assert.Equal("invoice.png", result.Files?[0].OriginalFileName);
         }
 
