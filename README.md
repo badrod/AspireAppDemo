@@ -6,12 +6,23 @@
 
 ---
 
+## AIs used 
+- Google Gemini https://googleapis.github.io/dotnet-genai/ for invoice extraction
+- OpenAI GPT-5.1
+   for invoice extraction
+   for code generation and assistance using Github Copilot and built in Copilot in windows 11
+- Github Copilot Chat for code suggestions and improvements
+
 ## Overview
 
-AspireAppDemo is a minimal Web API and static front‑end that demonstrates file upload and invoice extraction workflows.  
-It includes a simple HTML frontend for uploading images and PDFs and a .NET Web API that accepts file uploads and returns parsed invoice data models.
+AspireAppDemo is a minimal Web API and static front‑end that demonstrates file upload and invoice extraction workflows.
+
+It uses AI LLM to interpret the upploaded .pdf/image.
+You can test it for free using Google AI [https://aistudio.google.com/api-keys]
+with models like "gemini-2.5-flash"  
 
 ---
+![Screenshot](assets/ui.png)
 
 ## Features
 
@@ -28,6 +39,7 @@ It includes a simple HTML frontend for uploading images and PDFs and a .NET Web 
 - Visual Studio 2026 (recommended) or Visual Studio Code
 - .NET 10 SDK
 - Git
+- Api key OpenAI or GoogleAI supported
 
 Before you begin, ensure the **.NET SDK** is installed and available on your PATH.  
 In Visual Studio, confirm the active project is using **.NET 10** under **Project Properties > Application**.
@@ -59,8 +71,8 @@ In Visual Studio, confirm the active project is using **.NET 10** under **Projec
    The API will be available at `http://localhost:5013`.
 4. Open the static front‑end in a browser:
 
-- Navigate to <https://localhost:5013/index.html> (replace {port} with the running port).
-- Or open WebApi/wwwroot/index.html directly for static testing (server‑backed upload requires the API running).
+    Navigate to <https://localhost:5013/index.html> (replace {port} with the running port).
+    Or open WebApi/wwwroot/index.html directly for static testing (server‑backed upload requires the API running).
 
 ## API
 
@@ -84,13 +96,13 @@ In Visual Studio, confirm the active project is using **.NET 10** under **Projec
 
 - Targets C# 14 and .NET 10
 - Coding standards defined in CONTRIBUTING.md and .editorconfig
-- Use the IAIService abstraction for invoice parsing (List<Invoice> from List<InvoiceFile>)
+- Use the IAIService and toggles the service to use based on feature toggle in appsettings.json.
 - Static files → WebApi/wwwroot
-- API controllers → WebApi/Controllers
+
 
 ## Feature Toggle
 
-  We are using Microsoft Microsoft.FeatureManagement
+  We are using Microsoft Microsoft.FeatureManagement nuget
 
 ```bash  
   appsettings.json
@@ -117,10 +129,13 @@ app.MapGet("/feature", () =>
   Google AI Service
   AspireAppDemo integrates with Google Gemini for invoice extraction.
   By default, the AI service is enabled and used for parsing uploaded invoices.
+
   Configuration
 
-- The service reads its settings from appsettings.json or environment variables.
-- Required values:
+- The service reads its settings from appsettings.json and api keys from environment variables (Keyvault for production).
+
+Required config values:
+
 - GoogleAI:Enabled → To use OpenAI set to false
 - GoogleAI:ApiKey → your Gemini API key set it in env vars with
 
@@ -144,16 +159,18 @@ Runtime Behavior
 
 Testing
 
-- /Tests.csproj includes unit tests for core parsing logic
-- One integration test for the upload API endpoint
-- Add more unit tests for parsing and API behaviors in a tests project
-- For manual tests, use index.html UI and sample invoice files
+- /Tests.csproj xUnit includes:
+  - Integration test for the upload API endpoint
+  - Samples of some unit tests for parsing and API behaviors in a tests project
+  - For manual tests, use index.html UI and sample invoice files
 
 CI/CD Visibility
 
 - ✅ Build & Test status via GitHub Actions
 - 📊 Coverage reports via Codecov
-- 🛡️ Quality gate via SonarCloud
+- 🛡️ Quality gate via SonarQube/SonarCloud
+- 🛡️ CodeQL Bult in Security checks in Github Workflows (scan for passwords/api keys in repo etc)
+
 Artifacts (coverage reports) are uploaded in each workflow run and can be downloaded from the Actions tab.
 
 Contributing
