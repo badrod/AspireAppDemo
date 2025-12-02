@@ -10,6 +10,7 @@ namespace Tests.Integration
 
 
         // Test for a feature toggle endpoint test both on and off states of flag
+        //when false returns 404 when true returns 200
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -22,14 +23,14 @@ namespace Tests.Integration
                 {
                     config.AddInMemoryCollection(new Dictionary<string, string?>
                     {
-                        { "FeatureManagement:TestFeature", flagValue.ToString() }
+                        { "FeatureManagement:EnableNewFeature", flagValue.ToString() }
                     });
                 });
             });
 
             var client = factory.CreateClient();
 
-            var response = await client.GetAsync("/test");    
+            var response = await client.GetAsync("/feature");    
 
             Assert.Equal(response.IsSuccessStatusCode,flagValue);
         }

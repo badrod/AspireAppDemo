@@ -28,7 +28,7 @@ with models like "gemini-2.5-flash"
   The response JSON is pretty‑printed in the UI.
 
 ---
-![Screenshot](assets/ui.png)
+![Screenshot](Assets/ui.png)
 
 ## Features
 
@@ -84,7 +84,7 @@ In Visual Studio, confirm the active project is using **.NET 10** under **Projec
 
 ### Scalar
 
-![Screenshot](assets/scalar.png)
+![Screenshot](Assets/scalar.png)
 
 - POST /api/upload
 - Accepts multipart/form-data with a file field
@@ -126,7 +126,7 @@ app.MapGet("/feature", () =>
 
 Gives an nice dashboard where you can view a lot of metrics and start/stop your apis
 Provide built in extension for Healthscheck, traceing, analyze, logs etc. Uses OpenTelemetry
-![Screenshot](assets/aspire.png)
+![Screenshot](Assets/aspire.png)
 
 ### Logging
 
