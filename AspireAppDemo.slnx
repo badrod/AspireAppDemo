@@ -1,6 +1,10 @@
 <Solution>
   <Folder Name="/Solution Items/">
     <File Path=".github/workflows/build.yml" />
+    <File Path="Assets/aspire.png" />
+    <File Path="Assets/scalar.png" />
+    <File Path="Assets/test-invoice.pdf" />
+    <File Path="Assets/ui.png" />
     <File Path="README.md" />
   </Folder>
   <Project Path="AspireAppDemo.AppHost/AspireAppDemo.AppHost.csproj" />
