@@ -1,6 +1,7 @@
 ﻿using Google.GenAI;
 using Google.GenAI.Types;
 using Microsoft.Extensions.Options;
+using System.Text.Json;
 using WebApi.Models;
 using Type = Google.GenAI.Types.Type;
 
@@ -18,18 +19,26 @@ namespace WebApi.Services
 
         public async Task<Invoice> ExtractInvoice(InvoiceFile invoiceFile)
         {
-           
+
             try
             {
                 var extension = Path.GetExtension(invoiceFile.OriginalFileName)?.ToLowerInvariant();
                 var json = await ExtractInvoiceFromFile(invoiceFile);
+              
                 if (json == null)
                     throw new Exception("No JSON extracted from invoice file.");
-                return Invoice.FromJson(json);
+
+                var dto = JsonSerializer.Deserialize<InvoiceDto>(json);
+
+                Invoice invoice = InvoiceMapper.ToDomain(dto!);
+
+
+                return invoice;
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Failed to Read Invoice");
+
                 throw;
             }
         }
@@ -57,16 +66,17 @@ namespace WebApi.Services
 
             var outputConfig = new GenerateContentConfig
             {
-                ResponseSchema = new Schema
-                {
-                    Type = Type.OBJECT,
-                    Properties = new Dictionary<string, Schema>
-                    {
-                        { "vendor", new Schema { Type = Type.STRING } },
-                        { "date", new Schema { Type = Type.STRING } },
-                        { "total", new Schema { Type = Type.NUMBER } }
-                    }
-                },
+                //ResponseSchema = new Schema
+                //{
+                //    Type = Type.OBJECT,
+                //    Properties = new Dictionary<string, Schema>
+                //    {
+                //        { "vendor", new Schema { Type = Type.STRING } },
+                //        { "date", new Schema { Type = Type.STRING } },
+                //        { "total", new Schema { Type = Type.NUMBER } },
+                //        { "items", new Schema { Type = Type.ARRAY } }
+                //    }
+                //},
                 ResponseMimeType = "application/json"
             };
 
